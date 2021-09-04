@@ -1,0 +1,9 @@
+body {
+  text-align: center;
+}
+
+#coin-input-box {
+  width: 500px;
+  margin: auto;
+  margin-bottom: 10px;
+}

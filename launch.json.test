@@ -1,0 +1,30 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Launch Chrome",
+            "url": "https://example.com",
+            // Here it is!
+            "runtimeArgs": ["--load-extension=${workspaceFolder}"]
+        },
+        {
+            "type": "chrome 2",
+            "request": "attach",
+            "name": "Chrome Extension debugging",
+            "port": 9222,
+            "url": "https://example.com",
+            "webRoot": "${workspaceFolder}/extension"
+        },
+        { 
+            // Firefox equivalent
+            "type": "firefox",
+            "request": "launch",
+            "name": "Launch Firefox",
+            "url": "https://example.com",
+            "addonPath": "${workspaceFolder}"
+        }
+    ]
+}
+
