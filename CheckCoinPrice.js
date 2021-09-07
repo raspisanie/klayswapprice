@@ -31,8 +31,14 @@ async function gotoSwapTab() {
 function startCheck() {
     chrome.storage.sync.get('coinPairs', data => {
         const coinPairs = data.coinPairs
+
+        if ('undefined' == typeof coinPairs) {
+            alert('옵션에서 체크할 코인 리스트를 작성해 주세요')
+            return
+        }
     
         if ('undefined' == typeof coinPairs.list) {
+            alert('옵션에서 체크할 코인 리스트를 작성해 주세요')
             return
         }
     
@@ -76,6 +82,11 @@ async function showCoinPairsPrice(coinPairs) {
         r.push(fromToPrices)
     }
 
+    if ('' == r) {
+        alert('옵션에서 체크할 코인 리스트를 작성해 주세요')
+        return
+    }
+
     showAlert(r.join('<br/>'))
 }
 
@@ -87,18 +98,35 @@ async function getCoinPairPrice(from, to) {
     await selectFrom(from)
     await selectTo(to)
     await setInputValue(fromInput, 1)
-    await waitInputIsNotUntil(toInput, 0)
+    await waitInputIsNotZeroAndSwapRouteIsAvailable(toInput)
 
-    return from + ' to ' + to + '=' + toInput.value
+    let v = toInput.value
+
+    if (!v) {
+        v = '변환 불가'
+    }
+    return from + ' to ' + to + '=' + v
 }
 
-async function waitInputIsNotUntil(input, value) {
+async function waitInputIsNotZeroAndSwapRouteIsAvailable(input) {
     while (true) {
-        if (input.value != value) {
+        if (input.value != 0) {
             break
         }
+
+        if (document.querySelector('.exchange-rate-and-pool-info').innerText.includes('no possible')) {
+            break
+        }
+
+        if (document.querySelector('.exchange-rate-and-pool-info').innerText.includes('없습니다')) {
+            break
+        }
+
+        console.log(document.querySelector('.exchange-rate-and-pool-info').innerText.includes('no possible'))
+
         await sleep(100)
     }
+
 }
 
 function setInputValue(input, value) {
