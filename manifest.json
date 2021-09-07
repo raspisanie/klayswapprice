@@ -1,7 +1,7 @@
 {
   "name": "KLAYSwapPrice",
   "description": "Check KLAYswap Price",
-  "version": "1.1",
+  "version": "1.2",
   "manifest_version": 3,
   "background": {
     "service_worker": "background.js"
@@ -37,7 +37,7 @@
         {
             "matches":["https://klayswap.com/*"],
             "js":[
-              "thirdParty/jquery-3.6.0.min.js"
+              "klayswap.js"
             ],
             "run_at": "document_start"
         }

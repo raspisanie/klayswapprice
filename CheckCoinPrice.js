@@ -137,11 +137,6 @@ async function selectCoinInMenu(coin) {
         if (isCoinSelectMenuGone()) {
             break
         }
-
-        if (isWarningMenuUp()) {
-            closeWarningMenu()
-        }
-
         await sleep(100)
     }
     //console.log('done')
@@ -157,20 +152,6 @@ async function selectCoinInMenu(coin) {
 
     function isCoinSelectMenuGone() {
         return 0 == elmsByCls('gen-modal gen-full-modal select-token-modal').length
-    }
-
-    function isWarningMenuUp() {
-        return 1 == elmsByCls('select-unsafe-token-modal').length
-    }
-
-    function closeWarningMenu() {
-        const warningModal = elmByCls('select-unsafe-token-modal')
-        const chkAgree = elmByCls.call(warningModal, 'confirm-on-modal-option')
-        chkAgree.click()
-
-        const btnsInModal = elmsByTag.call(warningModal, 'button')
-        const btnConfirm = btnsInModal[btnsInModal.length - 1]
-        btnConfirm.click()
     }
 }
 
