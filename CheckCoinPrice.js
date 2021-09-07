@@ -98,7 +98,19 @@ async function getCoinPairPrice(from, to) {
     await selectFrom(from)
     await selectTo(to)
     await setInputValue(fromInput, 1)
-    await waitInputIsNotZeroAndSwapRouteIsAvailable(toInput)
+
+    let tryCnt = 0
+    while (true) {
+        if (toInput.value != 0) {
+            break
+        }
+        await sleep(100)
+        ++tryCnt
+
+        if (30 == tryCnt) {
+            break
+        }
+    }
 
     let v = toInput.value
 
@@ -106,27 +118,6 @@ async function getCoinPairPrice(from, to) {
         v = '변환 불가'
     }
     return from + ' to ' + to + '=' + v
-}
-
-async function waitInputIsNotZeroAndSwapRouteIsAvailable(input) {
-    while (true) {
-        if (input.value != 0) {
-            break
-        }
-
-        if (document.querySelector('.exchange-rate-and-pool-info').innerText.includes('no possible')) {
-            break
-        }
-
-        if (document.querySelector('.exchange-rate-and-pool-info').innerText.includes('없습니다')) {
-            break
-        }
-
-        console.log(document.querySelector('.exchange-rate-and-pool-info').innerText.includes('no possible'))
-
-        await sleep(100)
-    }
-
 }
 
 function setInputValue(input, value) {
