@@ -97,12 +97,14 @@ async function getCoinPairPrice(from, to) {
 
     await selectFrom(from)
     await selectTo(to)
+    
+    let oldValue = toInput.value
     await setInputValue(fromInput, 100)
 
     let tryCnt = 0
     let hasSwapRoute = false
     while (true) {
-        if (toInput.value != 0) {
+        if (toInput.value != oldValue) {
             hasSwapRoute = true
             break
         }
@@ -115,11 +117,12 @@ async function getCoinPairPrice(from, to) {
     }
 
     if (hasSwapRoute) {
+        oldValue = toInput.value
         await setInputValue(fromInput, 1)
 
         tryCnt = 0
         while (true) {
-            if (toInput.value != 0) {
+            if (toInput.value != oldValue) {
                 break
             }
             await sleep(100)
