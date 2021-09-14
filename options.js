@@ -31,6 +31,10 @@ function init() {
         const coinPairs = data.coinPairs
         // console.log(coinPairs.list)
 
+        if ('undefined' == typeof coinPairs) {
+            return
+        }
+
         if ('undefined' == typeof coinPairs.list) {
             return
         }
