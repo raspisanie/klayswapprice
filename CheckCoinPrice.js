@@ -1,5 +1,3 @@
-readyAlert()
-
 if ('/exchange/swap' != window.location.pathname) {
     gotoSwapTab()
 } else {
@@ -62,41 +60,58 @@ function elmById(id) {
     return document.getElementById(id)
 }
 
-function elmsByTag(tag) {
-    let doc = this
-    if (this == window) {
-        doc = document
-    }
-    return doc.getElementsByTagName(tag)
-}
-
-function elmByTag(cls) {
-    return elmsByTag.call(this, cls)[0]
-}
-
 async function showCoinPairsPrice(coinPairs) {
     const r = []
 
+    let lastCoinPair = {from:'', to:''}
     for (const coinPair of coinPairs) {
-        const fromToPrices = await getCoinPairPrice(coinPair.from, coinPair.to)
+        const fromToPrices = await getCoinPairPrice(lastCoinPair, coinPair)
         r.push(fromToPrices)
+        lastCoinPair = coinPair
     }
 
-    if ('' == r) {
+    if (0 == r.length) {
         alert('옵션에서 체크할 코인 리스트를 작성해 주세요')
         return
     }
 
-    showAlert(r.join('<br/>'))
+    let msg = '<div>'
+    for (const item of r) {
+        const from = item.from
+        const to = item.to
+        const v = item.v
+
+        msg += from + ' to ' + to + '=' + v + '<br/>'
+    }
+
+    msg += '</div>'
+    msg += '<textarea style="width:100%">'
+
+    for (const item of r) {
+        const v = item.v
+
+        msg += v + '&#9;'
+    }
+    msg += '</textarea>'
+
+    showAlert(msg)
 }
 
-async function getCoinPairPrice(from, to) {
-    const inputWraps = elmsByCls('md-input-wrap')
-    const fromInput = elmByTag.call(inputWraps[0], 'input')
-    const toInput = elmByTag.call(inputWraps[1], 'input')
+async function getCoinPairPrice(lastCoinPair, curCoinPair) {
+    const from = curCoinPair.from
+    const to = curCoinPair.to
 
-    await selectFrom(from)
-    await selectTo(to)
+    const inputWraps = elmsByCls('md-input-wrap')
+    const fromInput = inputWraps[0].querySelector('input')
+    const toInput = inputWraps[1].querySelector('input')
+
+    if (lastCoinPair.from != from) {
+        await selectFrom(from)
+    }
+    
+    if (lastCoinPair.to != to) {
+        await selectTo(to)
+    }
     
     let oldValue = toInput.value
     await setInputValue(fromInput, 100)
@@ -139,7 +154,8 @@ async function getCoinPairPrice(from, to) {
     if (!v) {
         v = '변환 불가'
     }
-    return from + ' to ' + to + '=' + v
+    
+    return {from, to, v}
 }
 
 function setInputValue(input, value) {
@@ -169,7 +185,7 @@ function sleep(ms) {
 async function selectCoinInMenu(coin) {
     await waitForSelectCoinMenuIsVisible()
 
-    const searchBar = elmByTag.call(elmByCls('support-token-search'), 'input')
+    const searchBar = elmByCls('support-token-search').querySelector('input')
     setInputValue(searchBar, coin)
     await sleep(100)
     elmByCls('list-row').click()
@@ -196,50 +212,10 @@ async function selectCoinInMenu(coin) {
     }
 }
 
-function readyAlert() {
-    let alert = elmById('gamdoriAlert')
-    if (alert) {
-        return
-    }
-    document.body.insertAdjacentHTML('beforeend', '<div id="gamdoriAlert"> <div class="alertMsg">some message<br/>some message2</div> <button>x</button> </div>')
-    alert = elmById('gamdoriAlert')
-
-    const style = alert.style
-    style.width = '500px'
-    style['min-height'] = '100px'
-    style['max-height'] = '500px'
-    style['z-index'] = 99999
-    style.position = 'absolute'
-    style.left = '50%'
-    style.top = '10%'
-    style.border = '1px solid'
-    style['background-color'] = 'white'
-    style.padding = '5px'
-    style.overflow = 'auto'
-
-    const elmMsg = elmByCls.call(alert, 'alertMsg')
-    elmMsg.style['font-family'] = 'Arial'
-    elmMsg.style['font-size'] = '13px'
-
-    const btnClose = elmByTag.call(alert, 'button')
-    btnClose.addEventListener('click', () => {
-        style.visibility = 'hidden'
-    })
-
-    btnClose.style['margin-top'] = '10px'
-    btnClose.style.width = '30px'
-    btnClose.style.height = '30px'
-    btnClose.style.position = 'absolute'
-    btnClose.style.right = '5px'
-    btnClose.style.top = 0
-
-    style.visibility = 'hidden'
-}
-
 function showAlert(msg) {
     const alert = elmById('gamdoriAlert')
     alert.style.visibility = 'visible'
-
-    const elmMsg = elmByCls.call(alert, 'alertMsg')
+    
+    const elmMsg = alert.querySelector('.alertMsg')
     elmMsg.innerHTML = msg
 }
