@@ -27,6 +27,7 @@ async function gotoSwapTab() {
 }
 
 function startCheck() {
+    hideAlert()
     chrome.storage.sync.get('coinPairs', data => {
         const coinPairs = data.coinPairs
 
@@ -236,4 +237,9 @@ function showAlert(msg) {
     
     const elmMsg = alert.querySelector('.alertMsg')
     elmMsg.innerHTML = msg
+}
+
+function hideAlert() {
+    const alert = elmById('gamdoriAlert')
+    alert.querySelector('button').click()
 }
