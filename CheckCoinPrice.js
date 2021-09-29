@@ -5,7 +5,7 @@ if ('/exchange/swap' != window.location.pathname) {
 }
 
 async function gotoSwapTab() {
-    for (const navi of document.getElementsByClassName('nav-with-bar')) {
+    for (const navi of document.querySelector('.nav-with-bar')) {
         const naviText = navi.textContent.toLowerCase()
         if (naviText.includes('swap') || naviText.includes('스왑')) {
             navi.click()
@@ -99,18 +99,34 @@ async function showCoinPairsPrice(coinPairs) {
 
 async function getCoinPairPrice(lastCoinPair, curCoinPair) {
     const from = curCoinPair.from
+    let fromIdx = curCoinPair.fromIdx
     const to = curCoinPair.to
+    let toIdx = curCoinPair.toIdx
+
+    fromIdx -= 1
+    toIdx -= 1
+
+    if (fromIdx < 0 || isNaN(fromIdx)) {
+        fromIdx = 0
+    }
+
+    if (toIdx < 0 || isNaN(toIdx)) {
+        toIdx = 0
+    }
 
     const inputWraps = elmsByCls('md-input-wrap')
     const fromInput = inputWraps[0].querySelector('input')
     const toInput = inputWraps[1].querySelector('input')
 
     if (lastCoinPair.from != from) {
-        await selectFrom(from)
+        if (lastCoinPair.fromIdx != fromIdx)
+        await selectFrom(from, fromIdx)
     }
     
     if (lastCoinPair.to != to) {
-        await selectTo(to)
+        if (lastCoinPair.toIdx != toIdx) {
+            await selectTo(to, toIdx)
+        }
     }
     
     let oldValue = toInput.value
@@ -154,7 +170,7 @@ async function getCoinPairPrice(lastCoinPair, curCoinPair) {
     if (!v) {
         v = '변환 불가'
     }
-    
+
     return {from, to, v}
 }
 
@@ -164,16 +180,16 @@ function setInputValue(input, value) {
     input.dispatchEvent(new Event('keyup'))
 }
 
-async function selectFrom(from) {
+async function selectFrom(from, idx) {
     const btnFrom = elmsByCls('ic-token-symbol')[0]
     btnFrom.click()
-    await selectCoinInMenu(from)
+    await selectCoinInMenu(from, idx)
 }
 
-async function selectTo(to) {
+async function selectTo(to, idx) {
     const btnTo = elmsByCls('ic-token-symbol')[1]
     btnTo.click()
-    await selectCoinInMenu(to)
+    await selectCoinInMenu(to, idx)
 }
 
 function sleep(ms) {
@@ -182,13 +198,15 @@ function sleep(ms) {
     );
 }
 
-async function selectCoinInMenu(coin) {
+async function selectCoinInMenu(coin, idx) {
     await waitForSelectCoinMenuIsVisible()
 
     const searchBar = elmByCls('support-token-search').querySelector('input')
     setInputValue(searchBar, coin)
     await sleep(100)
-    elmByCls('list-row').click()
+    //console.log('idx='+idx)
+    //console.log(elmsByCls('list-row'))
+    document.querySelectorAll('.list-row')[idx].click()
 
     while (true) {
         if (isCoinSelectMenuGone()) {

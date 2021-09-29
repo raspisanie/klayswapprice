@@ -7,3 +7,20 @@ body {
   margin: auto;
   margin-bottom: 10px;
 }
+
+.from {
+  width: 100px;
+}
+
+.fromIdx {
+  width: 50px;
+  margin-right: 20px;
+}
+
+.to {
+  width: 100px;
+}
+
+.toIdx {
+  width: 50px;
+}
