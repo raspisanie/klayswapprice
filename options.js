@@ -4,19 +4,20 @@ function init() {
     btnSave.addEventListener('click', save)
     btnAdd.addEventListener('click', addNewCoinPairInputs)
 
-    chrome.storage.sync.get('coinPairs', load)
+    const chkCloseWarningPopup = document.querySelector('#chkCloseWarningPopup')
+
+    let coinPairs = {
+        list:[],
+        autoCloseWarningPopup: false
+    }
 
     function load(data) {
-        const coinPairs = data.coinPairs
-        // console.log(coinPairs.list)
-
-        if ('undefined' == typeof coinPairs) {
+        
+        if ('undefined' == typeof data.coinPairs || 'undefined' == typeof data.coinPairs.list) {
             return
         }
 
-        if ('undefined' == typeof coinPairs.list) {
-            return
-        }
+        coinPairs = data.coinPairs
 
         for (const coinPair of coinPairs.list) {
 
@@ -39,13 +40,15 @@ function init() {
                 inputToIdx.value = 1
             }
         }
+
+        chkCloseWarningPopup.checked = coinPairs.autoCloseWarningPopup
     }
 
     function save() {
-        const coinPairs = {list:[]}
+        coinPairs.list = []
         
-        const coinList = document.querySelector("#coinPairs")
-        for (const child of coinList.children) {
+        const coinList = document.querySelectorAll("#coinPairs tbody tr")
+        for (const child of coinList) {
 
             const inputs = child.querySelectorAll('input')
             const inputFrom = inputs[0]
@@ -70,6 +73,8 @@ function init() {
 
             // console.log(from + ', ' + to)
         }
+
+        coinPairs.autoCloseWarningPopup = chkCloseWarningPopup.checked
 
         chrome.storage.sync.set({coinPairs})
 
@@ -101,6 +106,8 @@ function init() {
 
         return [fromInput, fromIdxInput, toInput, toIdxInput]
     }
+
+    chrome.storage.sync.get('coinPairs', load)
 }
 
 init()

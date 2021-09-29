@@ -1,9 +1,13 @@
 readyAlert()
+let tryCloseWarning = false
 setInterval(() => {
     tryCloseWarningModal()
 }, 100)
 
 function tryCloseWarningModal() {
+    if (false == tryCloseWarning) {
+        return
+    }
     const warningModal = document.querySelector('.select-unsafe-token-modal')
     if (null == warningModal) {
         return
@@ -27,3 +31,22 @@ function readyAlert() {
         alert.style.visibility = 'hidden'
     })
 }
+
+setInterval(() => {
+    chrome.storage.sync.get('coinPairs', data => {
+        if ('undefined' == typeof data) {
+            return
+        }
+
+        if ('undefined' == typeof data.coinPairs) {
+            return
+        }
+
+        if ('undefined' == typeof data.coinPairs.autoCloseWarningPopup) {
+            return
+        }
+
+        tryCloseWarning = data.coinPairs.autoCloseWarningPopup
+    })
+    
+}, 1000)
