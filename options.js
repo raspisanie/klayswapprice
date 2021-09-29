@@ -83,7 +83,7 @@ function init() {
         coinList.appendChild(wrap)
 
         wrap.insertAdjacentHTML('beforeend',
-            '<input class="from"><input class="fromIdx" type="number"><input class="to"><input class="toIdx" type="number"><button class="close">x</button>')
+            '<input class="from"><input class="fromIdx" type="number" value="1"><input class="to"><input class="toIdx" type="number" value="1"><button class="close">x</button>')
 
         const fromInput = wrap.querySelector('.from')
         const fromIdxInput = wrap.querySelector('.fromIdx')

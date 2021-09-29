@@ -1,7 +1,37 @@
-if ('/exchange/swap' != window.location.pathname) {
-    gotoSwapTab()
-} else {
-    startCheck()
+var onMessage = async (message, sender, sendResponse) => {
+    
+    chrome.runtime.onMessage.removeListener(onMessage)
+
+    if (message.includes('_checkcoin_params')) {
+        const paramJson = message.split('=')[1]
+        const param = JSON.parse(paramJson)
+
+        const lastCoinPair = {from:'', fromIdx:-1, to:'', toIdx:-1}
+        const coinPair = {
+            from: param[0],
+            fromIdx: param[1],
+            to: param[2],
+            toIdx: param[3]
+        }
+        await getCoinPairPrice(lastCoinPair, coinPair)
+        return
+    }
+
+    switch (message) {
+        case '_checkcoin_checkAll':
+            checkAll()
+            break
+    }
+}
+
+chrome.runtime.onMessage.addListener(onMessage)
+
+function checkAll() {
+    if ('/exchange/swap' != window.location.pathname) {
+        gotoSwapTab()
+    } else {
+        startCheck()
+    }
 }
 
 async function gotoSwapTab() {
@@ -64,7 +94,7 @@ function elmById(id) {
 async function showCoinPairsPrice(coinPairs) {
     const r = []
 
-    let lastCoinPair = {from:'', to:''}
+    let lastCoinPair = {from:'', fromIdx:-1, to:'', toIdx:-1}
     for (const coinPair of coinPairs) {
         const fromToPrices = await getCoinPairPrice(lastCoinPair, coinPair)
         r.push(fromToPrices)
@@ -86,7 +116,7 @@ async function showCoinPairsPrice(coinPairs) {
     }
 
     msg += '</div>'
-    msg += '<textarea style="width:100%">'
+    msg += '<textarea id="forExcelPaste">'
 
     for (const item of r) {
         const v = item.v

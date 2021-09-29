@@ -1,0 +1,25 @@
+#btnShowAllCoinPrices {
+  height: 30px;
+  width: 100px;
+  outline: none;
+  margin: 10px;
+  border: none;
+  border-radius: 2px;
+  background-color: darkslategrey;
+  color: white;
+}
+
+button:hover {
+  cursor: pointer;
+}
+
+.btnCheck {
+  height: 20px;
+  width: 100px;
+  outline: none;
+  margin: 5px 10px;
+  border: solid black 1px;
+  border-radius: 2px;
+  color: darkolivegreen;
+  background-color: white;
+}
