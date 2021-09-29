@@ -23,3 +23,7 @@ button:hover {
   color: darkolivegreen;
   background-color: white;
 }
+
+.checkWrapper {
+  width: 150px;
+}

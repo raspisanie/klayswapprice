@@ -1,12 +1,12 @@
 var onMessage = async (message, sender, sendResponse) => {
-    
+
     chrome.runtime.onMessage.removeListener(onMessage)
 
     if (message.includes('_checkcoin_params')) {
         const paramJson = message.split('=')[1]
         const param = JSON.parse(paramJson)
 
-        const lastCoinPair = {from:'', fromIdx:-1, to:'', toIdx:-1}
+        const lastCoinPair = { from: '', fromIdx: -1, to: '', toIdx: -1 }
         const coinPair = {
             from: param[0],
             fromIdx: param[1],
@@ -58,21 +58,31 @@ async function gotoSwapTab() {
 
 function startCheck() {
     hideAlert()
-    chrome.storage.sync.get('coinPairs', data => {
-        const coinPairs = data.coinPairs
+    chrome.storage.sync.get('blockCheckAll', data => {
+        let blockCheckAll = { list: [] }
 
-        if ('undefined' == typeof coinPairs) {
-            alert('옵션에서 체크할 코인 리스트를 작성해 주세요')
-            return
+        if ('undefined' != typeof data.blockCheckAll && 'undefined' != typeof data.blockCheckAll.list) {
+            blockCheckAll = data.blockCheckAll
         }
-    
-        if ('undefined' == typeof coinPairs.list) {
-            alert('옵션에서 체크할 코인 리스트를 작성해 주세요')
-            return
-        }
-    
-        showCoinPairsPrice(coinPairs.list)
+
+        chrome.storage.sync.get('coinPairs', data => {
+            const coinPairs = data.coinPairs
+
+            if ('undefined' == typeof coinPairs) {
+                alert('옵션에서 체크할 코인 리스트를 작성해 주세요')
+                return
+            }
+
+            if ('undefined' == typeof coinPairs.list) {
+                alert('옵션에서 체크할 코인 리스트를 작성해 주세요')
+                return
+            }
+
+            showCoinPairsPrice(coinPairs.list, blockCheckAll.list)
+        })
+
     })
+
 }
 
 function elmsByCls(cls) {
@@ -91,11 +101,16 @@ function elmById(id) {
     return document.getElementById(id)
 }
 
-async function showCoinPairsPrice(coinPairs) {
+async function showCoinPairsPrice(coinPairs, blockCheckList) {
     const r = []
 
-    let lastCoinPair = {from:'', fromIdx:-1, to:'', toIdx:-1}
+    let lastCoinPair = { from: '', fromIdx: -1, to: '', toIdx: -1 }
     for (const coinPair of coinPairs) {
+
+        if (blockCheckList.includes(blockCheckKey(coinPair))) {
+            continue
+        }
+
         const fromToPrices = await getCoinPairPrice(lastCoinPair, coinPair)
         r.push(fromToPrices)
         lastCoinPair = coinPair
@@ -126,6 +141,16 @@ async function showCoinPairsPrice(coinPairs) {
     msg += '</textarea>'
 
     showAlert(msg)
+
+    // source from popup.js
+    function blockCheckKey(coinPair) {
+        const from = coinPair.from
+        const fromIdx = coinPair.fromIdx
+        const to = coinPair.to
+        const toIdx = coinPair.toIdx
+
+        return `${from},${fromIdx},${to},${toIdx}`
+    }
 }
 
 async function getCoinPairPrice(lastCoinPair, curCoinPair) {
@@ -151,15 +176,15 @@ async function getCoinPairPrice(lastCoinPair, curCoinPair) {
 
     if (lastCoinPair.from != from) {
         if (lastCoinPair.fromIdx != fromIdx)
-        await selectFrom(from, fromIdx)
+            await selectFrom(from, fromIdx)
     }
-    
+
     if (lastCoinPair.to != to) {
         if (lastCoinPair.toIdx != toIdx) {
             await selectTo(to, toIdx)
         }
     }
-    
+
     let oldValue = toInput.value
     await setInputValue(fromInput, 100)
 
@@ -189,7 +214,7 @@ async function getCoinPairPrice(lastCoinPair, curCoinPair) {
             }
             await sleep(100)
             ++tryCnt
-    
+
             if (30 == tryCnt) {
                 break
             }
@@ -202,7 +227,7 @@ async function getCoinPairPrice(lastCoinPair, curCoinPair) {
         v = '변환 불가'
     }
 
-    return {from, to, v}
+    return { from, to, v }
 }
 
 function setInputValue(input, value) {
@@ -264,7 +289,7 @@ async function selectCoinInMenu(coin, idx) {
 function showAlert(msg) {
     const alert = elmById('gamdoriAlert')
     alert.style.visibility = 'visible'
-    
+
     const elmMsg = alert.querySelector('.alertMsg')
     elmMsg.innerHTML = msg
 }
