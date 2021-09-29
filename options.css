@@ -24,3 +24,7 @@ body {
 .toIdx {
   width: 50px;
 }
+
+#coinPairs {
+  margin: auto;
+}

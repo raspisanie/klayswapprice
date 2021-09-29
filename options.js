@@ -77,13 +77,17 @@ function init() {
     }
 
     function addNewCoinPairInputs() {
-        const coinList = document.querySelector("#coinPairs")
+        const coinList = document.querySelector("#coinPairs tbody")
 
-        const wrap = document.createElement('div')
+        const wrap = document.createElement('tr')
         coinList.appendChild(wrap)
 
         wrap.insertAdjacentHTML('beforeend',
-            '<input class="from"><input class="fromIdx" type="number" value="1"><input class="to"><input class="toIdx" type="number" value="1"><button class="close">x</button>')
+            '<td><input class="from"></td>' +
+            '<td><input class="fromIdx" type="number" value="1"></td>' +
+            '<td><input class="to"></td>' +
+            '<td><input class="toIdx" type="number" value="1"></td>' +
+            '<td><button class="close">x</button></td>')
 
         const fromInput = wrap.querySelector('.from')
         const fromIdxInput = wrap.querySelector('.fromIdx')
