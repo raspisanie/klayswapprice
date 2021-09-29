@@ -9,7 +9,8 @@
   color: white;
 }
 
-button:hover {
+button:hover,
+input[type='checkbox']:hover {
   cursor: pointer;
 }
 
