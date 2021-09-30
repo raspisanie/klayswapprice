@@ -1,20 +1,14 @@
 function init() {
-    const onMessage = async (message, sender, sendResponse) => {
+    const onMessage = (message, sender, sendResponse) => {
 
         chrome.runtime.onMessage.removeListener(onMessage)
 
         if (message.includes('_checkcoin_params')) {
-            const paramJson = message.split('=')[1]
-            const param = JSON.parse(paramJson)
-
-            const lastCoinPair = { from: '', fromIdx: -1, to: '', toIdx: -1 }
-            const coinPair = {
-                from: param[0],
-                fromIdx: param[1],
-                to: param[2],
-                toIdx: param[3]
+            if ('/exchange/swap' != window.location.pathname) {
+                gotoSwapTab(() => checkCoin(message))
+            } else {
+                checkCoin(message)
             }
-            await getCoinPairPrice(lastCoinPair, coinPair)
             return
         }
 
@@ -27,15 +21,29 @@ function init() {
 
     chrome.runtime.onMessage.addListener(onMessage)
 
+    async function checkCoin(message) {
+        const paramJson = message.split('=')[1]
+        const param = JSON.parse(paramJson)
+
+        const lastCoinPair = { from: '', fromIdx: -1, to: '', toIdx: -1 }
+        const coinPair = {
+            from: param[0],
+            fromIdx: param[1],
+            to: param[2],
+            toIdx: param[3]
+        }
+        await getCoinPairPrice(lastCoinPair, coinPair)
+    }
+
     function checkAll() {
         if ('/exchange/swap' != window.location.pathname) {
-            gotoSwapTab()
+            gotoSwapTab(startCheck)
         } else {
             startCheck()
         }
     }
 
-    async function gotoSwapTab() {
+    async function gotoSwapTab(callback) {
         for (const navi of document.querySelectorAll('.nav-with-bar')) {
             const naviText = navi.textContent.toLowerCase()
             if (naviText.includes('swap') || naviText.includes('스왑')) {
@@ -54,7 +62,7 @@ function init() {
             await sleep(100)
         }
 
-        startCheck()
+        callback()
     }
 
     function startCheck() {
