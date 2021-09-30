@@ -36,7 +36,7 @@ function init() {
     }
 
     async function gotoSwapTab() {
-        for (const navi of document.querySelector('.nav-with-bar')) {
+        for (const navi of document.querySelectorAll('.nav-with-bar')) {
             const naviText = navi.textContent.toLowerCase()
             if (naviText.includes('swap') || naviText.includes('스왑')) {
                 navi.click()
@@ -137,7 +137,10 @@ function init() {
         for (const item of r) {
             const v = item.v
 
-            msg += v + '&#9;'
+            if (r[0] != item) {
+                msg += '&#9;'    
+            }
+            msg += v
         }
         msg += '</textarea>'
 
