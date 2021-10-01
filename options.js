@@ -1,18 +1,17 @@
 function init() {
 
-    const btnSave = document.getElementById("btnSave")
-    btnSave.addEventListener('click', save)
-    btnAdd.addEventListener('click', addNewCoinPairInputs)
+    $("#btnSave").on('click', save)
+    $("#btnAdd").on('click', addNewCoinPairInputs)
 
-    const chkCloseWarningPopup = document.querySelector('#chkCloseWarningPopup')
+    const chkCloseWarningPopup = $('#chkCloseWarningPopup')
 
     let coinPairs = {
-        list:[],
+        list: [],
         autoCloseWarningPopup: false
     }
 
     function load(data) {
-        
+
         if ('undefined' == typeof data.coinPairs || 'undefined' == typeof data.coinPairs.list) {
             return
         }
@@ -27,39 +26,37 @@ function init() {
             const inputTo = inputs[2]
             const inputToIdx = inputs[3]
 
-            inputFrom.value = coinPair.from
-            inputFromIdx.value = coinPair.fromIdx
-            inputTo.value = coinPair.to
-            inputToIdx.value = coinPair.toIdx
+            inputFrom.val(coinPair.from)
+            inputFromIdx.val(coinPair.fromIdx)
+            inputTo.val(coinPair.to)
+            inputToIdx.val(coinPair.toIdx)
 
-            if (!inputFromIdx.value) {
-                inputFromIdx.value = 1
+            if (!inputFromIdx.val()) {
+                inputFromIdx.val(1)
             }
 
-            if (!inputToIdx.value) {
-                inputToIdx.value = 1
+            if (!inputToIdx.val()) {
+                inputToIdx.val(1)
             }
         }
 
-        chkCloseWarningPopup.checked = coinPairs.autoCloseWarningPopup
+        chkCloseWarningPopup[0].checked = coinPairs.autoCloseWarningPopup
     }
 
     function save() {
         coinPairs.list = []
-        
-        const coinList = document.querySelectorAll("#coinPairs tbody tr")
-        for (const child of coinList) {
 
-            const inputs = child.querySelectorAll('input')
-            const inputFrom = inputs[0]
-            const inputFromIdx = inputs[1]
-            const inputTo = inputs[2]
-            const inputToIdx = inputs[3]
+        for (const tr of $("#coinPairs tbody tr")) {
+            const inputs = $(tr).find('input')
+            const inputFrom = inputs.eq(0)
+            const inputFromIdx = inputs.eq(1)
+            const inputTo = inputs.eq(2)
+            const inputToIdx = inputs.eq(3)
 
-            const from = inputFrom.value
-            const fromIdx = inputFromIdx.value
-            const to = inputTo.value
-            const toIdx = inputToIdx.value
+            const from = inputFrom.val()
+            const fromIdx = inputFromIdx.val()
+            const to = inputTo.val()
+            const toIdx = inputToIdx.val()
 
             if ('' == from) {
                 continue
@@ -69,39 +66,104 @@ function init() {
                 continue
             }
 
-            coinPairs.list.push({from, fromIdx, to, toIdx})
+            coinPairs.list.push({ from, fromIdx, to, toIdx })
 
             // console.log(from + ', ' + to)
         }
 
-        coinPairs.autoCloseWarningPopup = chkCloseWarningPopup.checked
+        coinPairs.autoCloseWarningPopup = chkCloseWarningPopup[0].checked
 
-        chrome.storage.sync.set({coinPairs})
+        //console.log(coinPairs)
+        chrome.storage.sync.set({ coinPairs })
 
         alert('옵션 저장 완료')
     }
 
+    let animatingUpDown = false
     function addNewCoinPairInputs() {
-        const coinList = document.querySelector("#coinPairs tbody")
+        const coinList = $("#coinPairs tbody")
 
-        const wrap = document.createElement('tr')
-        coinList.appendChild(wrap)
+        const wrap = $(document.createElement('tr'))
+        coinList.append(wrap)
 
-        wrap.insertAdjacentHTML('beforeend',
+        wrap.append(
+            '<td><button class="itemDown">▼</button></td>' +
+            '<td><button class="itemUp">▲</button></td>' +
             '<td><input class="from"></td>' +
             '<td><input class="fromIdx" type="number" value="1"></td>' +
             '<td><input class="to"></td>' +
             '<td><input class="toIdx" type="number" value="1"></td>' +
-            '<td><button class="close">x</button></td>')
+            '<td><button class="delete">x</button></td>')
 
-        const fromInput = wrap.querySelector('.from')
-        const fromIdxInput = wrap.querySelector('.fromIdx')
-        const toInput = wrap.querySelector('.to')
-        const toIdxInput = wrap.querySelector('.toIdx')
-        const btnDelete = wrap.querySelector('.close')
+        const btnMoveDown = wrap.find('.itemDown')
+        const btnMoveUp = wrap.find('.itemUp')
+        const fromInput = wrap.find('.from')
+        const fromIdxInput = wrap.find('.fromIdx')
+        const toInput = wrap.find('.to')
+        const toIdxInput = wrap.find('.toIdx')
+        const btnDelete = wrap.find('.delete')
 
-        btnDelete.addEventListener('click', () => {
-            coinList.removeChild(wrap)    
+        btnMoveDown.on('click', () => {
+
+            const next = wrap.next()
+            if (0 == next.length) {
+                return
+            }
+
+            if (animatingUpDown) {
+                return
+            }
+
+            const clicked = wrap
+            const distance = $(clicked).outerHeight()
+
+            coinList.find('button').removeClass('lastClickedUpDown')
+            btnMoveDown.addClass('lastClickedUpDown')
+
+            animatingUpDown = true
+            $.when(
+                clicked.animate({top: distance}, 100),
+                next.animate({top: -distance}, 100)
+            ).done(() => {
+                next.css('top', '0px')
+                clicked.css('top', '0px')
+                next.insertBefore(clicked)
+                animatingUpDown = false
+            })
+
+        })
+
+        btnMoveUp.on('click', () => {
+
+            const prev = wrap.prev()
+            if (0 == prev.length) {
+                return
+            }
+
+            if (animatingUpDown) {
+                return
+            }
+
+            const clicked = wrap
+            const distance = $(clicked).outerHeight()
+
+            coinList.find('button').removeClass('lastClickedUpDown')
+            btnMoveUp.addClass('lastClickedUpDown')
+
+            animatingUpDown = true
+            $.when(
+                clicked.animate({top: -distance}, 100),
+                prev.animate({top: distance}, 100)
+            ).done(() => {
+                prev.css('top', '0px')
+                clicked.css('top', '0px')
+                clicked.insertBefore(prev)
+                animatingUpDown = false
+            })
+        })
+
+        btnDelete.on('click', () => {
+            wrap.remove()
         })
 
         return [fromInput, fromIdxInput, toInput, toIdxInput]

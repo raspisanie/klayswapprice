@@ -28,3 +28,21 @@ body {
 #coinPairs {
   margin: auto;
 }
+
+button:hover,
+input[type='checkbox']:hover {
+  cursor: pointer;
+}
+
+tr {
+  position: relative;
+}
+
+.itemUp,
+.itemDown {
+  color: black;
+}
+
+.lastClickedUpDown {
+  color: red;
+}
