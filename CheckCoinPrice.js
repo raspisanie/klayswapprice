@@ -22,6 +22,7 @@ function init() {
     chrome.runtime.onMessage.addListener(onMessage)
 
     async function checkCoin(message) {
+        
         const paramJson = message.split('=')[1]
         const param = JSON.parse(paramJson)
 
@@ -167,12 +168,16 @@ function init() {
 
     async function getCoinPairPrice(lastCoinPair, curCoinPair) {
         const from = curCoinPair.from
-        let fromIdx = curCoinPair.fromIdx
         const to = curCoinPair.to
+        let fromIdx = curCoinPair.fromIdx
         let toIdx = curCoinPair.toIdx
+        let lastFromIdx = lastCoinPair.fromIdx
+        let lastToIdx = lastCoinPair.fromIdx
 
         fromIdx -= 1
         toIdx -= 1
+        lastFromIdx -= 1
+        lastToIdx -= 1
 
         if (fromIdx < 0 || isNaN(fromIdx)) {
             fromIdx = 0
@@ -182,17 +187,25 @@ function init() {
             toIdx = 0
         }
 
+        if (lastFromIdx < 0 || isNaN(lastFromIdx)) {
+            lastFromIdx = 0
+        }
+
+        if (lastToIdx < 0 || isNaN(lastToIdx)) {
+            lastToIdx = 0
+        }
+
         const inputWraps = elmsByCls('md-input-wrap')
         const fromInput = inputWraps[0].querySelector('input')
         const toInput = inputWraps[1].querySelector('input')
-
+        
         if (lastCoinPair.from != from) {
-            if (lastCoinPair.fromIdx != fromIdx)
+            if (lastFromIdx != fromIdx)
                 await selectFrom(from, fromIdx)
         }
 
         if (lastCoinPair.to != to) {
-            if (lastCoinPair.toIdx != toIdx) {
+            if (lastToIdx != toIdx) {
                 await selectTo(to, toIdx)
             }
         }
