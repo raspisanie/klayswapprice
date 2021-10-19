@@ -186,28 +186,17 @@ function init() {
         if (toIdx < 0 || isNaN(toIdx)) {
             toIdx = 0
         }
-
-        if (lastFromIdx < 0 || isNaN(lastFromIdx)) {
-            lastFromIdx = 0
-        }
-
-        if (lastToIdx < 0 || isNaN(lastToIdx)) {
-            lastToIdx = 0
-        }
-
+        
         const inputWraps = elmsByCls('md-input-wrap')
         const fromInput = inputWraps[0].querySelector('input')
         const toInput = inputWraps[1].querySelector('input')
         
-        if (lastCoinPair.from != from) {
-            if (lastFromIdx != fromIdx)
-                await selectFrom(from, fromIdx)
+        if (lastCoinPair.from != from || lastFromIdx != fromIdx) {
+            await selectFrom(from, fromIdx)
         }
 
-        if (lastCoinPair.to != to) {
-            if (lastToIdx != toIdx) {
-                await selectTo(to, toIdx)
-            }
+        if (lastCoinPair.to != to || lastToIdx != toIdx) {
+            await selectTo(to, toIdx)
         }
 
         let oldValue = toInput.value
