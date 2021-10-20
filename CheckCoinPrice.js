@@ -270,6 +270,7 @@ function init() {
 
     async function selectCoinInMenu(coin, idx) {
         await waitForSelectCoinMenuIsVisible()
+        await uncheckDepositedAsset()
 
         const searchBar = elmByCls('support-token-search').querySelector('input')
         setInputValue(searchBar, coin)
@@ -286,6 +287,21 @@ function init() {
             tryCloseWarningModal()
         }
         //console.log('done')
+
+        async function uncheckDepositedAsset() {
+            if (null == document.querySelector('.asset-checkbox-filter--checked')) {
+                return
+            }
+
+            document.querySelector('.asset-checkbox-filter').click()
+            while (true) {
+                if (null == document.querySelector('.asset-checkbox-filter--checked')) {
+                    return
+                }   
+
+                await sleep(100)
+            }
+        }
 
         async function waitForSelectCoinMenuIsVisible() {
             while (true) {
