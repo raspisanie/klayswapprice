@@ -94,7 +94,7 @@ const btnShowAllCoinPrices = document.querySelector("#btnShowAllCoinPrices")
 btnShowAllCoinPrices.addEventListener("click", async () => {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
   const tabId = tab.id
-
+  // alert('btnShowAllCoinPrices clicked')
   chrome.scripting.executeScript(
     {
       target: { tabId },

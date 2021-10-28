@@ -1,6 +1,10 @@
 function init() {
-    const onMessage = (message, sender, sendResponse) => {
+    
+    const dev = !('update_url' in chrome.runtime.getManifest())
 
+    log('CheckCoinPrice init')
+    const onMessage = (message, sender, sendResponse) => {
+        log('message='+message)
         chrome.runtime.onMessage.removeListener(onMessage)
 
         if (message.includes('_checkcoin_params')) {
@@ -21,8 +25,10 @@ function init() {
 
     chrome.runtime.onMessage.addListener(onMessage)
 
+    log('listener attached')
+
     async function checkCoin(message) {
-        
+        log('checkCoin')
         const paramJson = message.split('=')[1]
         const param = JSON.parse(paramJson)
 
@@ -37,6 +43,7 @@ function init() {
     }
 
     function checkAll() {
+        log('checkAll')
         if ('/exchange/swap' != window.location.pathname) {
             gotoSwapTab(startCheck)
         } else {
@@ -56,10 +63,10 @@ function init() {
         while (true) {
             const inputWraps = elmsByCls('md-input-wrap')
             if (2 == inputWraps.length) {
-                // console.log('changed')
+                // log('changed')
                 break
             }
-            // console.log('waiting...')
+            // log('waiting...')
             await sleep(100)
         }
 
@@ -152,8 +159,21 @@ function init() {
             msg += v
         }
         msg += '</textarea>'
+        msg += '<button id="btnCopyCoinPriceResultToClipboard">클립보드로 복사</button>'
 
         showAlert(msg)
+
+        document.querySelector('#btnCopyCoinPriceResultToClipboard').addEventListener('click',
+            () => {
+                const txt = document.querySelector('#forExcelPaste')
+
+                txt.select()
+                txt.setSelectionRange(0, 99999)
+
+                navigator.clipboard.writeText(txt.value)
+                alert('복사 완료')
+            }
+        )
 
         // source from popup.js
         function blockCheckKey(coinPair) {
@@ -275,8 +295,8 @@ function init() {
         const searchBar = elmByCls('support-token-search').querySelector('input')
         setInputValue(searchBar, coin)
         await sleep(100)
-        //console.log('idx='+idx)
-        //console.log(elmsByCls('list-row'))
+        //log('idx='+idx)
+        //log(elmsByCls('list-row'))
         document.querySelectorAll('.list-row')[idx].click()
 
         while (true) {
@@ -286,7 +306,7 @@ function init() {
             await sleep(100)
             tryCloseWarningModal()
         }
-        //console.log('done')
+        //log('done')
 
         async function uncheckDepositedAsset() {
             if (null == document.querySelector('.asset-checkbox-filter--checked')) {
@@ -327,7 +347,7 @@ function init() {
 
     function hideAlert() {
         const alert = elmById('gamdoriAlert')
-        alert.querySelector('button').click()
+        alert.querySelector('#gamdoriAlertClose').click()
     }
 
     function tryCloseWarningModal() {
@@ -342,6 +362,13 @@ function init() {
         const btnsInModal = warningModal.querySelectorAll('button')
         const btnConfirm = btnsInModal[btnsInModal.length - 1]
         btnConfirm.click()
+    }
+
+    function log(...args) {
+        if (false == dev) {
+            return
+        }
+        console.log(...args)
     }
 }
 

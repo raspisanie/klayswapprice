@@ -32,3 +32,8 @@
     width:100%;
     margin-top: 20px;
 }
+
+#btnCopyCoinPriceResultToClipboard {
+    width: 100%;
+    border: solid 1px;
+}

@@ -1,3 +1,5 @@
+const dev = !('update_url' in chrome.runtime.getManifest())
+
 readyAlert()
 let tryCloseWarning = false
 setInterval(() => {
@@ -33,20 +35,30 @@ function readyAlert() {
 }
 
 setInterval(() => {
-    chrome.storage.sync.get('coinPairs', data => {
-        if ('undefined' == typeof data) {
-            return
+    
+    try {
+        chrome.storage.sync.get('coinPairs', data => {
+            if ('undefined' == typeof data) {
+                return
+            }
+    
+            if ('undefined' == typeof data.coinPairs) {
+                return
+            }
+    
+            if ('undefined' == typeof data.coinPairs.autoCloseWarningPopup) {
+                return
+            }
+    
+            tryCloseWarning = data.coinPairs.autoCloseWarningPopup
+        })
+    } catch (e) {
+        if (dev) {
+            console.error(e)
+            console.log(chrome)
+            console.log(chrome.app)
+            console.log(chrome.app.isInstalled)
         }
-
-        if ('undefined' == typeof data.coinPairs) {
-            return
-        }
-
-        if ('undefined' == typeof data.coinPairs.autoCloseWarningPopup) {
-            return
-        }
-
-        tryCloseWarning = data.coinPairs.autoCloseWarningPopup
-    })
+    }
     
 }, 1000)

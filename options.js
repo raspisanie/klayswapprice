@@ -75,6 +75,7 @@ function init() {
 
         //console.log(coinPairs)
         chrome.storage.sync.set({ coinPairs })
+        $('button').removeClass('lastClickedUpDown')
 
         alert('옵션 저장 완료')
     }
