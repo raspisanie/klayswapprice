@@ -4,6 +4,7 @@ let blockCheckAll = {list:[]}
 let coinPairs = {list:[]}
 
 chrome.storage.sync.get('coinPairs', data => {
+  
   coinPairs = data.coinPairs
   // console.log(coinPairs.list)
 
@@ -110,10 +111,6 @@ btnShowAllCoinPrices.addEventListener("click", async () => {
   window.close()
 })
 
-function blockCheckKey(from, fromIdx, to, toIdx) {
-  return `${from},${fromIdx},${to},${toIdx}`
-}
-
 chkAll.addEventListener('click', () => {
   blockCheckAll.list = []
 
@@ -141,6 +138,103 @@ chkAll.addEventListener('click', () => {
     chk.checked = chkAll.checked
   }
 })
+
+document.querySelectorAll(".bookmarks button").forEach((btn) => {
+  btn.addEventListener("click", async () => {
+    const hotkey = parseInt(btn.id[btn.id.length - 1])
+    // alert(hotkey)
+    gotoFavoriteSiteByHotkey(hotkey)
+  })
+})
+
+document.addEventListener('keypress', (e) => {
+  const code = e.code
+  if (false == code.includes('Digit')) {
+    return
+  }
+  
+  const hotkey = parseInt(code[code.length - 1])
+  gotoFavoriteSiteByHotkey(hotkey)
+})
+
+function gotoFavoriteSiteByHotkey(hotkey) {
+  switch (hotkey) {
+    case 1:
+      gotoKfi()
+      break
+    case 2:
+      gotoKsp()
+      break
+    case 3:
+      gotoUfo()
+      break
+    case 4:
+      gotoKokoa()
+      break
+    case 5:
+      gotoDonkey()
+      break
+    case 6:
+      gotoKai()
+      break
+    case 7:
+      gotoJun()
+      break
+    case 8:
+      gotoClink()
+      break
+    case 9:
+      gotoTothem()
+      break
+    case 0:
+      gotoDexata()
+      break
+  }
+}
+
+function gotoKfi() {
+  chrome.tabs.create({url: 'https://klayfi.finance/'})
+}
+
+function gotoKsp() {
+  chrome.tabs.create({url: 'https://klayswap.com/'})
+}
+
+function gotoUfo() {
+  chrome.tabs.create({url: 'https://ufoswap.fi/'})
+}
+
+function gotoKokoa() {
+  chrome.tabs.create({url: 'https://app.kokoa.finance/'})
+}
+
+function gotoDonkey() {
+  chrome.tabs.create({url: 'https://www.donkey.fund/main'})
+}
+
+function gotoKai() {
+  chrome.tabs.create({url: 'https://kaiprotocol.fi/'})
+}
+
+function gotoJun() {
+  chrome.tabs.create({url: 'https://junprotocol.io/'})
+}
+
+function gotoClink() {
+  chrome.tabs.create({url: 'https://clink.pro/'})
+}
+
+function gotoTothem() {
+  chrome.tabs.create({url: 'https://tothem.pro/'})
+}
+
+function gotoDexata() {
+  chrome.tabs.create({url: 'https://dexata.kr/'})
+}
+
+function blockCheckKey(from, fromIdx, to, toIdx) {
+  return `${from},${fromIdx},${to},${toIdx}`
+}
 
 function refreshChkAll() {
   chkAll.checked = true
