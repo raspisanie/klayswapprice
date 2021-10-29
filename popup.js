@@ -45,6 +45,16 @@ chrome.storage.sync.get('coinPairs', data => {
     }
   })
 
+  document.querySelector('#btnDonate').addEventListener('click', () => {
+    const DONATE_KLAYTN_WALLET = '0x386b37151eC68d8a4a1E83dfCe4475B9E56f37E1'
+    
+    navigator.clipboard.writeText(DONATE_KLAYTN_WALLET).then(() => {
+      alert('클립보드에 클레이튼 후원지갑 주소 복사 완료')
+    }, () => {
+      alert('후원지갑 주소 : 0x386b37151eC68d8a4a1E83dfCe4475B9E56f37E1')
+    })
+  })
+
   function initCoinPriceCheckBtns() {
     chrome.storage.sync.get('blockCheckAll', data => {
     

@@ -171,7 +171,7 @@ function init() {
                 txt.setSelectionRange(0, 99999)
 
                 navigator.clipboard.writeText(txt.value)
-                alert('복사 완료')
+                alert('클립보드에 복사 완료')
             }
         )
 
