@@ -37,6 +37,7 @@ body {
   border-radius: 2px;
   background-color: darkslategrey;
   color: white;
+  line-height: 10px;
 }
 
 button:hover,

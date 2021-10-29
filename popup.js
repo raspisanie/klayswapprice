@@ -1,4 +1,5 @@
 const chkAll = document.querySelector('#checkAll')
+const btnShowAllCoinPrices = document.querySelector("#btnShowAllCoinPrices")
 
 let blockCheckAll = {list:[]}
 let coinPairs = {list:[]}
@@ -22,6 +23,12 @@ chrome.storage.sync.get('coinPairs', data => {
   
   document.addEventListener('keypress', (e) => {
     const code = e.code
+
+    if ('Space' == code) {
+      btnShowAllCoinPrices.click()
+      return
+    }
+
     if (false == code.includes('Digit')) {
       return
     }
@@ -204,7 +211,7 @@ chrome.storage.sync.get('coinPairs', data => {
   }
 })
 
-const btnShowAllCoinPrices = document.querySelector("#btnShowAllCoinPrices")
+
 
 btnShowAllCoinPrices.addEventListener("click", async () => {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })

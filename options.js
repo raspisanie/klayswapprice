@@ -39,6 +39,19 @@ function init() {
 
     function load(data) {
 
+        for (let i = 0; i < bookmarkHotkeyInputs.length; ++i) {
+            bookmarkHotkeyInputs[i].value = parseInt(i) + 1
+        }
+        bookmarkHotkeyInputs[9].value = 0
+
+        for (const bookmarkHotkey of bookmarkHotkeyInputs) {
+
+            $(bookmarkHotkey).on("keyup paste click change", (e) => {
+                checkSameHotkeys()
+            })
+
+        }
+
         if ('undefined' == typeof data.coinPairs || 'undefined' == typeof data.coinPairs.list) {
             return
         }
@@ -69,11 +82,6 @@ function init() {
 
         chkCloseWarningPopup[0].checked = coinPairs.autoCloseWarningPopup
 
-        for (let i = 0; i < bookmarkHotkeyInputs.length; ++i) {
-            bookmarkHotkeyInputs[i].value = parseInt(i) + 1
-        }
-        bookmarkHotkeyInputs[9].value = 0
-
         if (coinPairs.bookmarkHotkeys) {
             for (const hotkey of coinPairs.bookmarkHotkeys) {
                 const bookmarkInfo = Bookmarks.list.find(item => item.name == hotkey.name)
@@ -83,13 +91,6 @@ function init() {
         }
 
         checkSameHotkeys()
-        for (const bookmarkHotkey of bookmarkHotkeyInputs) {
-
-            $(bookmarkHotkey).on("keyup paste click change", (e) => {
-                checkSameHotkeys()
-            })
-
-        }
     }
 
     function checkSameHotkeys() {
