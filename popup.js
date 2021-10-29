@@ -37,6 +37,14 @@ chrome.storage.sync.get('coinPairs', data => {
     gotoFavoriteSiteByHotkey(hotkey)
   })
 
+  chrome.tabs.query({currentWindow: true, active: true}, (tabs) => {
+    const url = tabs[0].url
+    if (false == url.includes('klayswap.com')) {
+      document.querySelector('#price-check-panel').style.display = 'none'
+      document.querySelector('body').style.width = 'initial'
+    }
+  })
+
   function initCoinPriceCheckBtns() {
     chrome.storage.sync.get('blockCheckAll', data => {
     

@@ -1,5 +1,5 @@
 body {
-  width: 260px;
+  width: max-content;
 }
 
 #panel-left,
@@ -9,23 +9,22 @@ body {
 }
 
 #panel-left {
-  width: 90px;
+  width: 95px;
   padding: 10px;
-  margin-right: -10px;
 }
 
 #bookmarks {
-  width: 110%;
+  width: 100%;
 }
 
 #btnDonate {
-  width: 110%;
+  width: 100%;
   margin-top: 10px;
 }
 
 #price-check-panel {
   width: 150px;
-  margin-left: 0px;
+  margin-left: -5px;
 }
 
 #btnShowAllCoinPrices {
