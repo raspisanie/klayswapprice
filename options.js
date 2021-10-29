@@ -4,10 +4,37 @@ function init() {
     $("#btnAdd").on('click', addNewCoinPairInputs)
 
     const chkCloseWarningPopup = $('#chkCloseWarningPopup')
+    const bookmarkHotkeyInputs = $('.set-hotkey-item input')
+
+    initSetBookmarks()
 
     let coinPairs = {
         list: [],
-        autoCloseWarningPopup: false
+        autoCloseWarningPopup: false,
+        bookmarkHotkeys: []
+    }
+
+    function initSetBookmarks() {
+
+        const bookmarkIcons = $('.hotkey-icon')
+        for (const i in Bookmarks.list) {
+            const item = Bookmarks.list[i]
+
+            for (const css of item.cssList) {
+                
+                for (const property in css) {
+                    
+                    let style = css[property]
+                    if (style.includes('!important')) {
+                        style = style.replace(' !important', '')
+                        bookmarkIcons[i].style.setProperty(property, style, 'important') 
+                    } else {
+                        bookmarkIcons[i].style.setProperty(property, style) 
+                    }
+                    
+                }
+            }
+        }
     }
 
     function load(data) {
@@ -41,10 +68,54 @@ function init() {
         }
 
         chkCloseWarningPopup[0].checked = coinPairs.autoCloseWarningPopup
+
+        for (let i = 0; i < bookmarkHotkeyInputs.length; ++i) {
+            bookmarkHotkeyInputs[i].value = parseInt(i) + 1
+        }
+        bookmarkHotkeyInputs[9].value = 0
+
+        if (coinPairs.bookmarkHotkeys) {
+            for (const hotkey of coinPairs.bookmarkHotkeys) {
+                const bookmarkInfo = Bookmarks.list.find(item => item.name == hotkey.name)
+                const idx = Bookmarks.list.indexOf(bookmarkInfo)
+                bookmarkHotkeyInputs[idx].value = hotkey.key
+            }
+        }
+
+        checkSameHotkeys()
+        for (const bookmarkHotkey of bookmarkHotkeyInputs) {
+
+            $(bookmarkHotkey).on("keyup paste click change", (e) => {
+                checkSameHotkeys()
+            })
+
+        }
+    }
+
+    function checkSameHotkeys() {
+
+        for (const bookmarkHotkey of bookmarkHotkeyInputs) {
+            $(bookmarkHotkey).removeClass('conflict-hotkey')
+        }
+
+        for (let i = 0; i < bookmarkHotkeyInputs.length - 1; ++i) {
+            const input1 = bookmarkHotkeyInputs[i]
+
+            for (let j = i + 1; j < bookmarkHotkeyInputs.length; ++j) {
+                const input2 = bookmarkHotkeyInputs[j]
+                if (input1.value == input2.value) {
+                    $(input1).addClass('conflict-hotkey')
+                    $(input2).addClass('conflict-hotkey')
+                    break
+                }
+            }
+        }
+
     }
 
     function save() {
         coinPairs.list = []
+        coinPairs.bookmarkHotkeys = []
 
         for (const tr of $("#coinPairs tbody tr")) {
             const inputs = $(tr).find('input')
@@ -72,6 +143,15 @@ function init() {
         }
 
         coinPairs.autoCloseWarningPopup = chkCloseWarningPopup[0].checked
+
+        for (let i = 0; i < bookmarkHotkeyInputs.length; ++i) {
+            const hotkeyInput = bookmarkHotkeyInputs[i]
+            const name = Bookmarks.list[i].name
+            const key = parseInt(hotkeyInput.value)
+
+            coinPairs.bookmarkHotkeys.push({name, key})
+        }
+        // coinPairs.bookmarkHotkeys = 
 
         //console.log(coinPairs)
         chrome.storage.sync.set({ coinPairs })

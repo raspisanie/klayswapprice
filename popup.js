@@ -22,7 +22,7 @@ chrome.storage.sync.get('coinPairs', data => {
       blockCheckAll = data.blockCheckAll
     }
 
-    const buttons = document.querySelector('#buttons')
+    const chkButtons = document.querySelector('#chkButtons')
 
     for (const coinPair of coinPairs.list) {
 
@@ -33,7 +33,7 @@ chrome.storage.sync.get('coinPairs', data => {
 
       const wrap = document.createElement('div')
       wrap.classList.add('checkWrapper')
-      buttons.appendChild(wrap)
+      chkButtons.appendChild(wrap)
 
       const btn = document.createElement('button')
       wrap.appendChild(btn)
@@ -86,8 +86,124 @@ chrome.storage.sync.get('coinPairs', data => {
     }
 
     refreshChkAll()
+  })  // chrome.storage.sync.get('blockCheckAll', data => {
+  
+  initSiteHotkeyBtns()
+
+  document.querySelectorAll("#bookmarks button").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      gotoByHotkeyBtn(btn)
+    })
+  })
+  
+  document.addEventListener('keypress', (e) => {
+    const code = e.code
+    if (false == code.includes('Digit')) {
+      return
+    }
+    
+    const hotkey = parseInt(code[code.length - 1])
+    gotoFavoriteSiteByHotkey(hotkey)
   })
 
+  function gotoByHotkeyBtn(btn) {
+    const id = btn.id
+    const name = id.replace('btnBookmark-', '')
+    const bookmark = Bookmarks.list.find(bookmark => bookmark.name == name)
+    const url = bookmark.url
+    chrome.tabs.create({url})
+  }
+  
+  function gotoFavoriteSiteByHotkey(hotkey) {
+
+    if ('undefined' == typeof coinPairs.bookmarkHotkeys) {
+      gotoFavoriteSiteByDefaultHotkey(hotkey)
+      return
+    }
+
+    let idx = hotkey - 1
+    if (0 == hotkey) {
+      idx = 9
+    }
+
+    const hotkeyBtns = [...document.querySelectorAll('#bookmarks button')]
+    gotoByHotkeyBtn(hotkeyBtns[idx])
+  }
+  
+  function gotoFavoriteSiteByDefaultHotkey(hotkey) {
+    let curBookmark = null
+    switch (hotkey) {
+      case 1:
+        curBookmark = bookmark('kfi')
+        break
+      case 2:
+        curBookmark = bookmark('ksp')
+        break
+      case 3:
+        curBookmark = bookmark('ufo')
+        break
+      case 4:
+        curBookmark = bookmark('kokoa')
+        break
+      case 5:
+        curBookmark = bookmark('donkey')
+        break
+      case 6:
+        curBookmark = bookmark('kai')
+        break
+      case 7:
+        curBookmark = bookmark('jun')
+        break
+      case 8:
+        curBookmark = bookmark('clink')
+        break
+      case 9:
+        curBookmark = bookmark('tothem')
+        break
+      case 0:
+        curBookmark = bookmark('dexata')
+        break
+      default:
+        return
+    }
+
+    const url = curBookmark.url
+    chrome.tabs.create({url})
+  }
+
+  function bookmark(name) {
+    return Bookmarks.list.find(bookmark => bookmark.name == name)
+  }
+  
+  function initSiteHotkeyBtns() {
+    if ('undefined' == typeof coinPairs.bookmarkHotkeys) {
+      return
+    }
+
+    const bookmarks = document.querySelector('#bookmarks')
+    const btns = [...bookmarks.querySelectorAll('button')]
+    btns.forEach(btn => btn.remove())
+
+    const hotkeys = [...coinPairs.bookmarkHotkeys].sort((l, r) => {
+      if (!l.key) {
+        return 1
+      }
+
+      if (!r.key) {
+        return -1
+      }
+      return l.key - r.key
+    })
+
+    // alert(hotkeys[0].name)
+    for (const hotkey of hotkeys) {
+      const name = hotkey.name
+      const btn = btns.find(btn => btn.id == 'btnBookmark-' + name)
+      
+      btn.textContent = hotkey.key
+      bookmarks.append(btn)
+    }
+  }
 })
 
 const btnShowAllCoinPrices = document.querySelector("#btnShowAllCoinPrices")
@@ -138,99 +254,6 @@ chkAll.addEventListener('click', () => {
     chk.checked = chkAll.checked
   }
 })
-
-document.querySelectorAll(".bookmarks button").forEach((btn) => {
-  btn.addEventListener("click", async () => {
-    const hotkey = parseInt(btn.id[btn.id.length - 1])
-    // alert(hotkey)
-    gotoFavoriteSiteByHotkey(hotkey)
-  })
-})
-
-document.addEventListener('keypress', (e) => {
-  const code = e.code
-  if (false == code.includes('Digit')) {
-    return
-  }
-  
-  const hotkey = parseInt(code[code.length - 1])
-  gotoFavoriteSiteByHotkey(hotkey)
-})
-
-function gotoFavoriteSiteByHotkey(hotkey) {
-  switch (hotkey) {
-    case 1:
-      gotoKfi()
-      break
-    case 2:
-      gotoKsp()
-      break
-    case 3:
-      gotoUfo()
-      break
-    case 4:
-      gotoKokoa()
-      break
-    case 5:
-      gotoDonkey()
-      break
-    case 6:
-      gotoKai()
-      break
-    case 7:
-      gotoJun()
-      break
-    case 8:
-      gotoClink()
-      break
-    case 9:
-      gotoTothem()
-      break
-    case 0:
-      gotoDexata()
-      break
-  }
-}
-
-function gotoKfi() {
-  chrome.tabs.create({url: 'https://klayfi.finance/'})
-}
-
-function gotoKsp() {
-  chrome.tabs.create({url: 'https://klayswap.com/'})
-}
-
-function gotoUfo() {
-  chrome.tabs.create({url: 'https://ufoswap.fi/'})
-}
-
-function gotoKokoa() {
-  chrome.tabs.create({url: 'https://app.kokoa.finance/'})
-}
-
-function gotoDonkey() {
-  chrome.tabs.create({url: 'https://www.donkey.fund/main'})
-}
-
-function gotoKai() {
-  chrome.tabs.create({url: 'https://kaiprotocol.fi/'})
-}
-
-function gotoJun() {
-  chrome.tabs.create({url: 'https://junprotocol.io/'})
-}
-
-function gotoClink() {
-  chrome.tabs.create({url: 'https://clink.pro/'})
-}
-
-function gotoTothem() {
-  chrome.tabs.create({url: 'https://tothem.pro/'})
-}
-
-function gotoDexata() {
-  chrome.tabs.create({url: 'https://dexata.kr/'})
-}
 
 function blockCheckKey(from, fromIdx, to, toIdx) {
   return `${from},${fromIdx},${to},${toIdx}`

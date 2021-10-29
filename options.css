@@ -13,7 +13,6 @@ body {
 }
 
 .fromIdx {
-  width: 50px;
   margin-right: 20px;
 }
 
@@ -44,5 +43,50 @@ tr {
 }
 
 .lastClickedUpDown {
+  color: red;
+}
+
+.set-hotkey-item {
+  display: inline-block;
+  width: 50px;
+}
+
+.set-hotkey-item img {
+  width: 100%;
+  border-radius: 10px;
+}
+
+.set-hotkey-item input {
+  width: 100%;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+#btn-chg-hotkey-icon-ufo {
+  background-color: #19121E;
+}
+
+#btn-chg-hotkey-icon-dexata {
+  background-color: #121212;
+  border-radius: 0px;
+  margin-bottom: 15px;
+}
+
+.set-hotkey-item div {
+  width: 50px;
+  height: 50px;
+  border: none;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-size: contain !important;
+  padding: 0px;
+  border-radius: 10px;
+  color: white;
+  -webkit-text-stroke: 1px black;
+  margin: 0px;
+  margin-bottom: 5px;
+}
+
+.conflict-hotkey {
   color: red;
 }
