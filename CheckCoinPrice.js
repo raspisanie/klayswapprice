@@ -220,7 +220,7 @@ function init() {
         }
 
         let oldValue = toInput.value
-        await setInputValue(fromInput, 100)
+        await setInputValue(fromInput, 1.001)
 
         let tryCnt = 0
         let hasSwapRoute = false
@@ -306,6 +306,14 @@ function init() {
             await sleep(100)
             tryCloseWarningModal()
         }
+
+        while (true) {
+            if (null == document.querySelector('.common-circle-progress .loader')) {
+                break
+            }
+            await sleep(100)
+        }
+        
         //log('done')
 
         async function uncheckDepositedAsset() {

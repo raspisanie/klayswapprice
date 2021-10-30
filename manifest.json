@@ -1,7 +1,7 @@
 {
   "name": "KLAYSwapPrice",
   "description": "Check KLAYswap Price",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "manifest_version": 3,
   "background": {
     "service_worker": "background.js"
