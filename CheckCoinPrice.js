@@ -213,14 +213,17 @@ function init() {
         
         if (lastCoinPair.from != from || lastFromIdx != fromIdx) {
             await selectFrom(from, fromIdx)
+            await waitForPriceLoading()
         }
 
         if (lastCoinPair.to != to || lastToIdx != toIdx) {
             await selectTo(to, toIdx)
+            await waitForPriceLoading()
         }
 
         let oldValue = toInput.value
         await setInputValue(fromInput, 1.001)
+        await waitForPriceLoading()
 
         let tryCnt = 0
         let hasSwapRoute = false
@@ -240,6 +243,7 @@ function init() {
         if (hasSwapRoute) {
             oldValue = toInput.value
             await setInputValue(fromInput, 1)
+            await waitForPriceLoading()
 
             tryCnt = 0
             while (true) {
@@ -306,13 +310,6 @@ function init() {
             await sleep(100)
             tryCloseWarningModal()
         }
-
-        while (true) {
-            if (null == document.querySelector('.common-circle-progress .loader')) {
-                break
-            }
-            await sleep(100)
-        }
         
         //log('done')
 
@@ -342,6 +339,15 @@ function init() {
 
         function isCoinSelectMenuGone() {
             return 0 == elmsByCls('gen-modal gen-full-modal select-token-modal').length
+        }
+    }
+
+    async function waitForPriceLoading() {
+        while (true) {
+            await sleep(100)
+            if (null == document.querySelector('.common-circle-progress .loader')) {
+                break
+            }
         }
     }
 
