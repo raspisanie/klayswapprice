@@ -19,7 +19,7 @@ class Bookmarks {
             name: 'ufo',
             url: 'https://ufoswap.fi/',
             cssList: [
-                {'background':'url(https://ufoswap.fi/dd4fb3b8b7ccb0777045e20e4e6517ea.svg)'},
+                {'background':'url(https://ufoswap.fi/303bfe8b6542809598a3d1d79ed6673f.svg)'},
                 {'background-color': '#19121E'}
             ]
         },

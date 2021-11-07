@@ -57,7 +57,9 @@ setInterval(() => {
             console.error(e)
             console.log(chrome)
             console.log(chrome.app)
-            console.log(chrome.app.isInstalled)
+            if (chrome.app) {
+                console.log(chrome.app.isInstalled)
+            }
         }
     }
     
