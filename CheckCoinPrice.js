@@ -194,6 +194,8 @@ function init() {
         let lastFromIdx = lastCoinPair.fromIdx
         let lastToIdx = lastCoinPair.fromIdx
 
+        log('getCoinPairPrice. from='+from+', to='+to)
+
         fromIdx -= 1
         toIdx -= 1
         lastFromIdx -= 1
@@ -276,14 +278,12 @@ function init() {
 
     async function selectFrom(from, idx) {
         const btnFrom = elmsByCls('ic-token-symbol')[0]
-        btnFrom.click()
-        await selectCoinInMenu(from, idx)
+        await selectCoinInMenu(btnFrom, from, idx)
     }
 
     async function selectTo(to, idx) {
         const btnTo = elmsByCls('ic-token-symbol')[1]
-        btnTo.click()
-        await selectCoinInMenu(to, idx)
+        await selectCoinInMenu(btnTo, to, idx)
     }
 
     function sleep(ms) {
@@ -292,8 +292,8 @@ function init() {
         );
     }
 
-    async function selectCoinInMenu(coin, idx) {
-        await waitForSelectCoinMenuIsVisible()
+    async function selectCoinInMenu(btn, coin, idx) {
+        await waitForSelectCoinMenuIsVisible(btn)
         await uncheckDepositedAsset()
 
         const searchBar = elmByCls('support-token-search').querySelector('input')
@@ -328,12 +328,22 @@ function init() {
             }
         }
 
-        async function waitForSelectCoinMenuIsVisible() {
+        async function waitForSelectCoinMenuIsVisible(btn) {
+            const WAIT_DELAY_MILS = 100
+            
+            let remainTryBtnClickMils = 0
             while (true) {
+                await sleep(WAIT_DELAY_MILS)
+
+                if (0 == remainTryBtnClickMils) {
+                    btn.click()
+                    remainTryBtnClickMils = 500
+                }
                 if (1 == elmsByCls('gen-modal gen-full-modal select-token-modal').length) {
                     break
                 }
-                await sleep(100)
+                
+                remainTryBtnClickMils -= WAIT_DELAY_MILS
             }
         }
 
